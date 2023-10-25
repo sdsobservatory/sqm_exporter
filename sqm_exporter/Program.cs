@@ -27,6 +27,14 @@ Metrics.DefaultRegistry.AddBeforeCollectCallback(async (cancel) =>
     SqmTemperature.Set(reading.Temperature);
 });
 
+app.MapGet("/sqm", async () =>
+{
+    var sqm = app.Services.GetRequiredService<ISqm>();
+    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+    var reading = await sqm.GetReading(timeout.Token);
+    return reading;
+});
+
 app.Run();
 
 internal record SqmOptions
